@@ -49,6 +49,16 @@ plot(data, data$steps, type="l", main="Average daily activity pattern", sub="tim
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+The interval containing the highest steps is
+
+```r
+data[which.max(data$steps),]
+```
+
+```
+##          date    steps
+## 47 2012-11-23 73.59028
+```
   
 ## Imputing missing values
 Find out how many records with missing value
@@ -77,7 +87,7 @@ data <- aggregate(steps~date, data=mdata, mean)
 hist(data$steps, main="Total number of steps per day", xlab="Number of steps", ylab="Days")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
   
 The min and median of total number of steps per day are  
 
@@ -98,3 +108,30 @@ summary(data)
 Comparing with the first assignemtn there is slightly change in mean value due to added day period, the filling missing value using median doesn't impact the estimates of the total daily number of steps. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+identify the day of data
+
+```r
+library(plyr)
+for (i in 1:length(mdata$steps)) { 
+if (is.na(mdata[i,1])) {mdata[i,1] <- 37.3785}
+}
+mdata$date <- as.Date(mdata$date,"%Y-%m-%d")
+mdata <- mutate(mdata, days=weekdays(mdata$date))
+head(mdata)
+```
+
+```
+##     steps       date interval   days
+## 1 37.3785 2012-10-01        0 Monday
+## 2 37.3785 2012-10-01        5 Monday
+## 3 37.3785 2012-10-01       10 Monday
+## 4 37.3785 2012-10-01       15 Monday
+## 5 37.3785 2012-10-01       20 Monday
+## 6 37.3785 2012-10-01       25 Monday
+```
+  
+plot the data
+
+```r
+data <- aggregate(steps~date, data=mdata, mean)
+```

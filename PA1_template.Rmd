@@ -10,24 +10,57 @@ output:
 First loading nd processing the data. 
 ```{r echo=TRUE}
 mdata <- read.csv("activity.csv", header=TRUE)
+mdata$date <- as.Date(mdata$date,"%Y-%m-%d")
 ```
 ## What is mean total number of steps taken per day?
 ```{r echo=TRUE}
-data <- aggregate(steps~date, data=mdata, sum)
-data$date <- as.Date(data$date,"%Y-%m-%d")
+data <- aggregate(steps~date, data=mdata, mean)
 hist(data$steps, main="Total number of steps per day", xlab="Number of steps", ylab="Days")
+```  
+  
+The min and median of total number of steps per day are  
+```{r}
 summary(data)
 ```
-The min and median of total number of steps per day are  
-min: 41 steps  
-median : 10765 steps  
-
+  
 ## What is the average daily activity pattern?
-
-
-
+```{r}
+mdata$interval <- (format(mdata$interval, width=4))
+mdata$interval <- chartr(" ", "0", mdata$interval)
+mdata$interval <- as.numeric(mdata$interval)
+data <- aggregate(steps~date, data=mdata, mean)
+```  
+  
+plot the data
+```{r}
+plot(data, data$steps, type="l", main="Average daily activity pattern", sub="time of day")
+```
+  
 ## Imputing missing values
-
-
+Find out how many records with missing value
+```{r}
+missing <- mdata[is.na(mdata$steps),]
+nrow(missing)
+```
+  
+fill the missing value
+```{r}
+for (i in 1:length(mdata$steps)) { 
+if (is.na(mdata[i,1])) {mdata[i,1] <- 37.3785}
+}
+```
+  
+Create a new dataset with the missing data filled in
+```{r}
+data <- aggregate(steps~date, data=mdata, mean)
+hist(data$steps, main="Total number of steps per day", xlab="Number of steps", ylab="Days")
+```
+  
+The min and median of total number of steps per day are  
+```{r}
+summary(data)
+```
+  
+Comparing with the first assignemtn there is slightly change in mean value due to added day period, the filling missing value using median doesn't impact the estimates of the total daily number of steps. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
